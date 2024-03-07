@@ -31,9 +31,10 @@ function main() {
     const submitButton = LoginPage.getLoginButton();
 
     submitButton?.addEventListener("click", handleLoginSubmit)
-    LoginPage.getUsername().addEventListener("change", validateUsername);
-    LoginPage.getPassword().addEventListener("change", validatePassword);
-    LoginPage.getApiHost().addEventListener("change", validateApiHost);
+    LoginPage.getUsername().addEventListener("change", validateLogin);
+    LoginPage.getPassword().addEventListener("change", validateLogin);
+    LoginPage.getApiHost().addEventListener("change", validateLogin);
+
   } catch (error: any) {
     console.error(error);
     sendError(error);
@@ -103,7 +104,7 @@ const Validators = {
 
 function createErrorMessages(assertions: ValidatorAssertion[]) {
   try {
-    assertions.filter(a => a.isValid).forEach((assertion: ValidatorAssertion, i: number) => {
+    assertions.forEach((assertion: ValidatorAssertion, i: number) => {
       let { htmlElement } = assertion;
       htmlElement.classList.remove("input-error");
       htmlElement.classList.add("input-success");
@@ -189,7 +190,11 @@ function validateApiHost() {
 function validateLogin() {
   try {
     const loginSubmitButton = LoginPage.getLoginButton();
-    let isValid = validateUsername() && validatePassword() && validateApiHost();
+    let isUsernameValid = validateUsername();
+    let isPasswordValid = validatePassword();
+    let isApiHostValid = validateApiHost();
+
+    let isValid = isUsernameValid && isPasswordValid && isApiHostValid;
     loginSubmitButton.disabled = !isValid;
     return isValid;
   } catch (error: any) {
