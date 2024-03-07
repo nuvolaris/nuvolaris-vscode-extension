@@ -4,28 +4,47 @@ import { LoginPanel } from "./panels/Login";
 
 
 let nuvLoginParams: NuvolarisLoginParams = {
-	nuvUser: process.env.NUV_USER,
-	nuvApiHost: process.env.NUV_APIHOST,
-	nuvPassword: process.env.NUV_PASSWORD
+	nuvUser: '',
+	nuvApiHost: '',
+	nuvPassword: ''
 }
-export async function activate(context: vscode.ExtensionContext) {
+let context: vscode.ExtensionContext | null = null;
+export async function activate(ctx: vscode.ExtensionContext) {
 	try {
+		context = ctx;
+		let envUser = context.environmentVariableCollection.get('NUV_USER')?.value
+		let envPassword = context.environmentVariableCollection.get('NUV_PASSWORD')?.value
+		let envApiHost = context.environmentVariableCollection.get('NUV_APIHOST')?.value
+
+		updateNuvolarisLoginParams(envUser, envPassword, envApiHost)
 		Object.entries(COMMANDS).forEach(([name, command]) =>
-			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
-				if (loginIfNotAlreadyLoggedIn(context)) launchTerminal(command)
+			context!.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
+				if (loginIfNotAlreadyLoggedIn()) launchTerminal(command)
 			}
 			)));
+
+		context!.subscriptions.push(vscode.commands.registerCommand('nuvolaris.changeuser', () => {
+			vscode.window.showInformationMessage("Are you sure you want to change user?", "Yes", "No")
+				.then(answer => {
+					if (answer === "Yes") {
+						clearEnvironmentVariables();
+						loginIfNotAlreadyLoggedIn();
+					}
+				})
+		}));
+
+
 	} catch (error: any) {
 		printError(error);
 		throw error;
 	}
 }
 
-function loginIfNotAlreadyLoggedIn(context: vscode.ExtensionContext) {
+function loginIfNotAlreadyLoggedIn() {
 	try {
 		let validCredentials = validateNuvolarisCredentials();
 		if (validCredentials) launchLoginTerminal();
-		else LoginPanel.render(handleLogin, context.extensionUri);
+		else LoginPanel.render(handleLogin, context!.extensionUri);
 		return validCredentials;
 	} catch (error) {
 		printError(error);
@@ -68,9 +87,22 @@ function updateNuvolarisLoginParams(nuvUser: string | undefined, nuvApiHost: str
 		nuvApiHost: nuvApiHost,
 		nuvPassword: nuvPassword
 	}
-	process.env.NUV_USER = nuvUser;
-	process.env.NUV_APIHOST = nuvApiHost;
-	process.env.NUV_PASSWORD = nuvPassword
+	context!.environmentVariableCollection.append('NUV_USER', nuvUser + '')
+	context!.environmentVariableCollection.append('NUV_PASSWORD', nuvPassword + '')
+	context!.environmentVariableCollection.append('NUV_APIHOST', nuvApiHost + '')
+
+}
+
+function clearEnvironmentVariables() {
+	nuvLoginParams = {
+		nuvUser: '',
+		nuvApiHost: '',
+		nuvPassword: ''
+	}
+	context!.environmentVariableCollection.delete('NUV_USER')
+	context!.environmentVariableCollection.delete('NUV_PASSWORD')
+	context!.environmentVariableCollection.delete('NUV_APIHOST')
+
 }
 
 function launchLoginTerminal() {
@@ -99,3 +131,4 @@ function launchTerminal(command: string) {
 function printError(error: any) {
 	return vscode.window.showErrorMessage("Si è verificato un errore", error.toString());
 }
+

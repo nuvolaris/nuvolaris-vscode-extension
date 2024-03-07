@@ -138,10 +138,10 @@ function validateUsername() {
     let fieldName = "Username";
     let input = LoginPage.getUsername();
     let assertions = [];
-    let shouldBeMin6 = Validators.minChars(input, 6, fieldName);
-    let shouldBeMax12 = Validators.maxChars(input, 12, fieldName);
-    assertions.push(shouldBeMin6);
-    assertions.push(shouldBeMax12);
+    let isNotEmpty = Validators.minChars(input, 1, fieldName);
+    // let shouldBeMax12 = Validators.maxChars(input, 12, fieldName);
+    assertions.push(isNotEmpty);
+    // assertions.push(shouldBeMax12);
     createErrorMessages(assertions);
     return assertions.filter(a => !a.isValid).length === 0;
   } catch (error: any) {
@@ -156,10 +156,10 @@ function validatePassword() {
     let fieldName = "Password";
     let input = LoginPage.getPassword();
     let assertions = [];
-    let shouldBeMin8 = Validators.minChars(input, 8, fieldName);
-    let shouldBeMax30 = Validators.maxChars(input, 30, fieldName);
-    assertions.push(shouldBeMin8);
-    assertions.push(shouldBeMax30);
+    let isNotEmpty = Validators.minChars(input, 1, fieldName);
+    // let shouldBeMax30 = Validators.maxChars(input, 30, fieldName);
+    assertions.push(isNotEmpty);
+    // assertions.push(shouldBeMax30);
     createErrorMessages(assertions);
     return assertions.filter(a => !a.isValid).length === 0;
   } catch (error: any) {
@@ -173,11 +173,11 @@ function validateApiHost() {
     let fieldName = "Api Host";
     let input = LoginPage.getApiHost();
     let assertions = [];
-    let shouldBeUrl = Validators.validUrl(input, fieldName);
+    let isNotEmpty = Validators.minChars(input, 1, fieldName);
     /*if(shouldBeUrl.isValid && !/^https?:\/\//i.test(input.value)){
         input.value = "https://" + input.value;
     }*/
-    assertions.push(shouldBeUrl);
+    assertions.push(isNotEmpty);
     createErrorMessages(assertions);
     return assertions.filter(a => !a.isValid).length === 0;
   } catch (error: any) {
