@@ -58,14 +58,13 @@ export class LoginPanel {
 
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
     const nonce = getNonce();
-
     return /*html*/ `
     <!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'self';">
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'self';">-->
         <title>Nuvolaris - Login!</title>
         <style>
             body {
@@ -76,7 +75,7 @@ export class LoginPanel {
             .login-container {
               max-width: 400px;
               margin: 0 auto;
-              background-color: #fff;
+              background-color: #1da1ce;
               border-radius: 5px;
               padding: 20px;
               box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -96,24 +95,46 @@ export class LoginPanel {
             }
             .login-form vscode-button {
               padding: 10px;
-              background-color: #007bff;
+              background-color: #ffa944;
               color: #fff;
               border: none;
               border-radius: 3px;
               cursor: pointer;
+              font-weight: bolder;
+            }
+
+            .logo-img {
+              background-color: #1da1ce;
+            }
+
+            .input-error {
+              border: 2px solid red !important;
+            }
+
+            .input-success {
+              border: 2px solid green !important;
+            }
+
+            .error-message {
+              color: #ffa944;
+              font-size: 0.8em;
+              font-weight: 900;
             }
           </style>
       </head>
-      <body>
+      <body> 
         <div class="login-container">
-        <h2>Login to Nuvolaris</h2>
-        <form class="login-form" id="loginForm">
-          <input type="text" id="username" placeholder="Username">
-          <input type="password" id="password" placeholder="Password">
-          <input type="text" id="apiHost" placeholder="API Host URL">
-          <vscode-button id="login-submit" type="submit">Login</vscode-button>
+        <img src="https://assets-global.website-files.com/64b64691257b91236b0e7482/64bfcab6bd343008e30e5d06_Nuvolaris%20logo%20white.png" class="logo-img"></img>
+        <h2>Login</h2>
+        <form class="login-form" id="login-form">
+
+          <input type="text" id="username-input" placeholder="Username">
+          <input type="password" id="password-input" placeholder="Password">
+          <input type="text" id="api-host-input" placeholder="API Host URL">
+
+          <vscode-button id="login-button" type="submit" value="https://nuvolaris.dev/"> L O G I N </vscode-button>
         </form>
-      </div>
+        </div>
         <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
       </body>
     </html>

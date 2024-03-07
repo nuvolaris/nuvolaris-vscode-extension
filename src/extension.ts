@@ -9,72 +9,93 @@ let nuvLoginParams: NuvolarisLoginParams = {
 	nuvPassword: process.env.NUV_PASSWORD
 }
 export async function activate(context: vscode.ExtensionContext) {
-
-	vscode.window.showInformationMessage('Credenziali ' + nuvLoginParams.nuvUser + ' ' + nuvLoginParams.nuvApiHost + ' ' + nuvLoginParams.nuvPassword);
-
-	if (!validateNuvolarisCredentials()){
-		LoginPanel.render(handleLogin, context.extensionUri);
-	} else {
-		launchLoginTerminal()
+	try {
+		Object.entries(COMMANDS).forEach(([name, command]) =>
+			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
+				if (loginIfNotAlreadyLoggedIn(context)) launchTerminal(command)
+			}
+			)));
+	} catch (error: any) {
+		printError(error);
+		throw error;
 	}
-
-	// Check ENV variables
-
-	// Registering the commands from the COMMANDS ENUM. Attaching the launchTerminal event to each command.
-	Object.entries(COMMANDS).forEach(([name, command]) => 
-	context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => 
-		launchTerminal(command)
-	)));
-
-	
-	
-
-	
 }
+
+function loginIfNotAlreadyLoggedIn(context: vscode.ExtensionContext) {
+	try {
+		let validCredentials = validateNuvolarisCredentials();
+		if (validCredentials) launchLoginTerminal();
+		else LoginPanel.render(handleLogin, context.extensionUri);
+		return validCredentials;
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
+}
+
+
 function handleLogin(username: string, password: string, apiHost: string) {
-	// Do something with the login details
-	storeNuvolarisCredentials(username, apiHost, password)
+	try {
+		storeNuvolarisCredentials(username, apiHost, password);
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
 }
 
-function launchTerminal(command: string){
-	// If a terminal named "Nuvolaris" already exists, launch the command inside that one.
-	const terminal = vscode.window.terminals.find(t=>t.name==="Nuvolaris") || vscode.window.createTerminal("Nuvolaris");
-	terminal.show();
-	terminal.sendText(command, true);   
+function validateNuvolarisCredentials() {
+	try {
+		return nuvLoginParams.nuvUser && nuvLoginParams.nuvApiHost && nuvLoginParams.nuvPassword
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
 }
 
-function validateNuvolarisCredentials(){
-	return nuvLoginParams.nuvUser && nuvLoginParams.nuvApiHost && nuvLoginParams.nuvPassword
-
+function storeNuvolarisCredentials(nuvUser: string | undefined, nuvApiHost: string | undefined, nuvPassword: string | undefined) {
+	try {
+		updateNuvolarisLoginParams(nuvUser, nuvApiHost, nuvPassword);
+		launchLoginTerminal();
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
 }
 
-function storeNuvolarisCredentials(nuvUser: string | undefined, nuvApiHost: string | undefined, nuvPassword: string | undefined){
-	vscode.window.showInformationMessage('Salvo credenziali ' + nuvUser + ' ' + nuvApiHost + ' ' + nuvPassword);
-
-	
-	updateNuvLoginParams(nuvUser, nuvApiHost, nuvPassword);
-	vscode.window.showInformationMessage('Credenziali OBJ ' + nuvLoginParams.nuvUser + ' ' + nuvLoginParams.nuvApiHost + ' ' + nuvLoginParams.nuvPassword);
-	vscode.window.showInformationMessage('Credenziali ENV' + process.env.NUV_USER + ' ' + process.env.NUV_APIHOST + ' ' + process.env.NUV_PASSWORD);
-
-	launchLoginTerminal()
-	
-}
-
-function updateNuvLoginParams(nuvUser: string | undefined, nuvApiHost: string | undefined, nuvPassword: string | undefined){
-
+function updateNuvolarisLoginParams(nuvUser: string | undefined, nuvApiHost: string | undefined, nuvPassword: string | undefined) {
 	nuvLoginParams = {
 		nuvUser: nuvUser,
 		nuvApiHost: nuvApiHost,
 		nuvPassword: nuvPassword
 	}
-
 	process.env.NUV_USER = nuvUser;
 	process.env.NUV_APIHOST = nuvApiHost;
 	process.env.NUV_PASSWORD = nuvPassword
 }
 
-function launchLoginTerminal(){
+function launchLoginTerminal() {
 	// launchTerminal('nuv -login')
-	launchTerminal(`nuv -login ${nuvLoginParams.nuvApiHost} ${nuvLoginParams.nuvUser} ${nuvLoginParams.nuvPassword}`)
+	try {
+		launchTerminal(`nuv -login ${nuvLoginParams.nuvApiHost} ${nuvLoginParams.nuvUser} ${nuvLoginParams.nuvPassword}`)
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
+}
 
+function launchTerminal(command: string) {
+	try {
+		// If a terminal named "Nuvolaris" already exists, launch the command inside that one.
+		const terminal = vscode.window.terminals.find(t => t.name === "Nuvolaris") || vscode.window.createTerminal("Nuvolaris");
+		terminal.show();
+		terminal.sendText(command, true);
+	} catch (error) {
+		printError(error);
+		throw error;
+	}
+}
+
+
+function printError(error: any) {
+	return vscode.window.showErrorMessage("Si è verificato un errore", error.toString());
 }
