@@ -1,6 +1,6 @@
-export enum Commands {
-    Deploy = "nuv ide deploy",
-    Devel = "nuv ide devel"
+export enum CliCommands {
+    Devel = "nuv ide devel",
+    Deploy = "nuv ide deploy"
 }
 
 export enum LoginPageIDs {

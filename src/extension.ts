@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 import { NuvolarisTerminalName } from './constants';
 import { NuvolarisLoginParams } from './interfaces';
 import { LoginPanel } from './login/LoginPanel';
-import { Commands } from './enumerators';
+import { CliCommands } from './enumerators';
+import * as fs from "fs";
+import * as os from "os";
 let nuvLoginParams: NuvolarisLoginParams = {
 	nuvUser: '',
 	nuvApiHost: '',
@@ -13,10 +15,13 @@ let context: vscode.ExtensionContext;
 export async function activate(ctx: vscode.ExtensionContext) {
 	try {
 		context = ctx;
-		
-		Object.entries(Commands).forEach(([name, command]) =>
+		let loggedIn = isLoggedIn();
+		if (!loggedIn) LoginPanel.render(handleLogin, context.extensionUri);
+
+		Object.entries(CliCommands).forEach(([name, command]) =>
 			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
-				if (loginIfNotAlreadyLoggedIn()) launchTerminal(command);
+				if (!loggedIn) LoginPanel.render(handleLogin, context.extensionUri);
+				launchTerminal(command);
 			}
 			)));
 
@@ -26,8 +31,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage("Are you sure you want to change user?", yes, no)
 				.then(answer => {
 					if (answer === yes) {
-						clearEnvironmentVariables();
-						loginIfNotAlreadyLoggedIn();
+						LoginPanel.render(handleLogin, context.extensionUri);
 					}
 				})
 		}));
@@ -37,98 +41,66 @@ export async function activate(ctx: vscode.ExtensionContext) {
 	}
 }
 
-function loginIfNotAlreadyLoggedIn() {
+function isLoggedIn() {
 	try {
-		let validCredentials = validateNuvolarisCredentials();
-		if (validCredentials) launchLoginTerminal();
-		else LoginPanel.render(handleLogin, context.extensionUri);
-		return validCredentials;
+		let isLoggedIn = false;
+		switch (os.platform().toLowerCase()) {
+			case "linux": {
+				isLoggedIn = fs.existsSync("/root/.wskprops");
+				break;
+			}
+			case "win32": {
+				isLoggedIn = fs.existsSync(os.userInfo().homedir + "/.wskprops");
+				break;
+			}
+			case 'aix': {
+				throw new Error("Not implemented yet.")
+				break;
+			}
+			case 'darwin': {
+				throw new Error("Not implemented yet.")
+				break;
+			}
+			case 'freebsd': {
+				throw new Error("Not implemented yet.")
+				break;
+			}
+			case 'openbsd': {
+				throw new Error("Not implemented yet.")
+				break;
+			}
+			case 'sunos': {
+				throw new Error("Not implemented yet.")
+				break;
+			}
+		}
+		return isLoggedIn;
 	} catch (error) {
 		printError(error);
 		throw error;
 	}
 }
-
 
 function handleLogin(username: string, password: string, apiHost: string) {
 	try {
-		updateNuvolarisLoginParams(username, password, apiHost);
-		let loginTerminalStatus = launchLoginTerminal();
-		// if (loginTerminalStatus?.code){
-		// 	LoginPanel.currentPanel?.dispose();
-
-		// }
-
+		launchTerminal(`nuv -login ${apiHost} ${username} ${password}`)
 	} catch (error) {
 		printError(error);
 		throw error;
 	}
 }
 
-function validateNuvolarisCredentials() {
-	try {
-		let { nuvUser, nuvApiHost, nuvPassword } = nuvLoginParams;
-		return nuvUser && nuvApiHost && nuvPassword;
-	} catch (error) {
-		printError(error);
-		throw error;
-	}
-}
-
-function updateNuvolarisLoginParams(nuvUser: string, nuvPassword: string, nuvApiHost: string) {
-	try {
-		nuvLoginParams = {
-			nuvUser: nuvUser,
-			nuvApiHost: nuvApiHost,
-			nuvPassword: nuvPassword
-		}
-		
-	} catch (error) {
-		printError(error);
-		throw error;
-	}
-}
-
-function clearEnvironmentVariables() {
-	try {
-		nuvLoginParams = {
-			nuvUser: '',
-			nuvApiHost: '',
-			nuvPassword: ''
-		}
-		
-	} catch (error) {
-		printError(error);
-		throw error;
-	}
-}
-
-function launchLoginTerminal() {
-	// launchTerminal('nuv -login')
-	try {
-		return launchTerminal(`nuv -login ${nuvLoginParams.nuvApiHost} ${nuvLoginParams.nuvUser} ${nuvLoginParams.nuvPassword}`)
-	} catch (error) {
-		printError(error);
-		throw error;
-	}
-}
-
-function launchTerminal(command: string) {
+function launchTerminal(command: string): void {
 	try {
 		// If a terminal named "Nuvolaris" already exists, launch the command inside that one.
 		const terminal = vscode.window.terminals.find(t => t.name === NuvolarisTerminalName) || vscode.window.createTerminal(NuvolarisTerminalName);
 		terminal.show();
 		terminal.sendText(command, true);
-		return terminal
 	} catch (error) {
 		printError(error);
 		throw error;
 	}
 }
-
-
-
-
 
 function printError(error: any) {
 	return vscode.window.showErrorMessage("Error occurred", error.toString());

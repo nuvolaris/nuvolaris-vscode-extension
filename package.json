@@ -34,7 +34,7 @@
 		"viewsWelcome": [
 			{
 				"view": "command-palette",
-				"contents": "\n[Deploy](command:nuvolaris.deploy)\n[Devel](command:nuvolaris.devel)\n[Change User](command:nuvolaris.changeuser)"
+				"contents": "\n[Devel](command:nuvolaris.devel)\n[Deploy](command:nuvolaris.deploy)\n[Change User](command:nuvolaris.changeuser)"
 			}
 		]
 	},
