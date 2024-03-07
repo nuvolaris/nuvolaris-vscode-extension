@@ -10,17 +10,12 @@ export class LoginPanel {
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
-
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
     this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-    
     this._setWebviewMessageListener(this._panel.webview);
     // this._panel.webview.onDidReceiveMessage(message => {
-
     //   switch (message.command) {
-        
     //     case 'login':
-
     //       // Handle login form submission
     //       const { username, password, apiHost } = message;
     //       console.log('Submitted login details:', username, password, apiHost);
@@ -39,7 +34,7 @@ export class LoginPanel {
         const command = message.command;
 
         switch (command) {
-            case "login":
+          case "login":
             // Handle login form submission
             const { username, password, apiHost } = message;
             // Pass the login details back to the extension
@@ -53,9 +48,7 @@ export class LoginPanel {
       this._disposables
     );
   }
-
   private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-
     const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
     const nonce = getNonce();
     return /*html*/ `
@@ -102,19 +95,15 @@ export class LoginPanel {
               cursor: pointer;
               font-weight: bolder;
             }
-
             .logo-img {
               background-color: #1da1ce;
             }
-
             .input-error {
               border: 2px solid red !important;
             }
-
             .input-success {
               border: 2px solid green !important;
             }
-
             .error-message {
               color: #ffa944;
               font-size: 0.8em;
@@ -127,11 +116,9 @@ export class LoginPanel {
         <img src="https://assets-global.website-files.com/64b64691257b91236b0e7482/64bfcab6bd343008e30e5d06_Nuvolaris%20logo%20white.png" class="logo-img"></img>
         <h2>Login</h2>
         <form class="login-form" id="login-form">
-
           <input type="text" id="username-input" placeholder="Username">
           <input type="password" id="password-input" placeholder="Password">
           <input type="text" id="api-host-input" placeholder="API Host URL">
-
           <vscode-button id="login-button" type="submit" value="https://nuvolaris.dev/"> L O G I N </vscode-button>
         </form>
         </div>
@@ -139,11 +126,8 @@ export class LoginPanel {
       </body>
     </html>
   `;
-    
   }
-
   private _onLoginCallback: ((username: string, password: string, apiHost: string) => void) | undefined;
-
   public static render(onLogin: (username: string, password: string, apiHost: string) => void, extensionUri: vscode.Uri) {
     if (LoginPanel.currentPanel) {
       LoginPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
