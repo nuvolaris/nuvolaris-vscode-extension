@@ -2,8 +2,7 @@ import * as vscode from 'vscode';
 import { NuvolarisTerminalName } from './constants';
 import { NuvolarisLoginParams } from './interfaces';
 import { LoginPanel } from './login/LoginPanel';
-import { Commands, LoginEnvironmentVariables } from './enumerators';
-
+import { Commands } from './enumerators';
 let nuvLoginParams: NuvolarisLoginParams = {
 	nuvUser: '',
 	nuvApiHost: '',
@@ -14,14 +13,7 @@ let context: vscode.ExtensionContext;
 export async function activate(ctx: vscode.ExtensionContext) {
 	try {
 		context = ctx;
-		let envUser = context.environmentVariableCollection.get(LoginEnvironmentVariables.NuvUser)?.value;
-		let envPassword = context.environmentVariableCollection.get(LoginEnvironmentVariables.NuvPassword)?.value;
-		let envApiHost = context.environmentVariableCollection.get(LoginEnvironmentVariables.NuvApihost)?.value;
-
-		if (envUser && envPassword && envApiHost) {
-			updateNuvolarisLoginParams(envUser, envPassword, envApiHost);
-		}
-
+		
 		Object.entries(Commands).forEach(([name, command]) =>
 			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
 				if (loginIfNotAlreadyLoggedIn()) launchTerminal(command);
@@ -61,7 +53,12 @@ function loginIfNotAlreadyLoggedIn() {
 function handleLogin(username: string, password: string, apiHost: string) {
 	try {
 		updateNuvolarisLoginParams(username, password, apiHost);
-		launchLoginTerminal();
+		let loginTerminalStatus = launchLoginTerminal();
+		// if (loginTerminalStatus?.code){
+		// 	LoginPanel.currentPanel?.dispose();
+
+		// }
+
 	} catch (error) {
 		printError(error);
 		throw error;
@@ -85,9 +82,7 @@ function updateNuvolarisLoginParams(nuvUser: string, nuvPassword: string, nuvApi
 			nuvApiHost: nuvApiHost,
 			nuvPassword: nuvPassword
 		}
-		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvUser, nuvUser);
-		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvPassword, nuvPassword);
-		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvApihost, nuvApiHost);
+		
 	} catch (error) {
 		printError(error);
 		throw error;
@@ -101,9 +96,7 @@ function clearEnvironmentVariables() {
 			nuvApiHost: '',
 			nuvPassword: ''
 		}
-		context.environmentVariableCollection.delete(LoginEnvironmentVariables.NuvUser);
-		context.environmentVariableCollection.delete(LoginEnvironmentVariables.NuvPassword);
-		context.environmentVariableCollection.delete(LoginEnvironmentVariables.NuvApihost);
+		
 	} catch (error) {
 		printError(error);
 		throw error;
@@ -113,7 +106,7 @@ function clearEnvironmentVariables() {
 function launchLoginTerminal() {
 	// launchTerminal('nuv -login')
 	try {
-		launchTerminal(`nuv -login ${nuvLoginParams.nuvApiHost} ${nuvLoginParams.nuvUser} ${nuvLoginParams.nuvPassword}`)
+		return launchTerminal(`nuv -login ${nuvLoginParams.nuvApiHost} ${nuvLoginParams.nuvUser} ${nuvLoginParams.nuvPassword}`)
 	} catch (error) {
 		printError(error);
 		throw error;
@@ -126,11 +119,15 @@ function launchTerminal(command: string) {
 		const terminal = vscode.window.terminals.find(t => t.name === NuvolarisTerminalName) || vscode.window.createTerminal(NuvolarisTerminalName);
 		terminal.show();
 		terminal.sendText(command, true);
+		return terminal
 	} catch (error) {
 		printError(error);
 		throw error;
 	}
 }
+
+
+
 
 
 function printError(error: any) {
