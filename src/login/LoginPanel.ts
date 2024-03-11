@@ -49,7 +49,7 @@ export class LoginPanel {
     );
   }
   private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-    const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
+    const webviewUri = getUri(webview, extensionUri, ["out", "login.js"]);
     const nonce = getNonce();
     return /*html*/ `
     <!DOCTYPE html>

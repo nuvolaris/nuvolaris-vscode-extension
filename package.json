@@ -1,8 +1,9 @@
 {
 	"name": "nuvolaris-vscode-extension",
 	"displayName": "nuvolaris",
+	"icon": "media/logo.png",
 	"description": "Nuvolaris extension for VS Code",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "nuvolaris",
 	"repository": "https://github.com/nuvolaris/nuvolaris-vscode-extension",
 	"engines": {

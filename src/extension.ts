@@ -5,11 +5,7 @@ import { LoginPanel } from './login/LoginPanel';
 import { CliCommands } from './enumerators';
 import * as fs from "fs";
 import * as os from "os";
-let nuvLoginParams: NuvolarisLoginParams = {
-	nuvUser: '',
-	nuvApiHost: '',
-	nuvPassword: ''
-}
+
 let context: vscode.ExtensionContext;
 
 export async function activate(ctx: vscode.ExtensionContext) {
