@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { NuvolarisTerminalName } from './constants';
-import { NuvolarisLoginParams } from './interfaces';
 import { LoginPanel } from './login/LoginPanel';
 import { CliCommands } from './enumerators';
 import * as fs from "fs";
@@ -21,15 +20,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
 			}
 			)));
 
-		context.subscriptions.push(vscode.commands.registerCommand('nuvolaris.changeuser', () => {
-			let yes = "Yes";
-			let no = "No";
-			vscode.window.showInformationMessage("Are you sure you want to change user?", yes, no)
-				.then(answer => {
-					if (answer === yes) {
+		context.subscriptions.push(vscode.commands.registerCommand('nuvolaris.login', () => {
 						LoginPanel.render(handleLogin, context.extensionUri);
-					}
-				})
 		}));
 	} catch (error: any) {
 		printError(error);
@@ -42,7 +34,7 @@ function isLoggedIn() {
 		let isLoggedIn = false;
 		switch (os.platform().toLowerCase()) {
 			case "linux": {
-				isLoggedIn = fs.existsSync("/root/.wskprops");
+				isLoggedIn = fs.existsSync(os.userInfo().homedir + "/.wskprops");
 				break;
 			}
 			case "win32": {
