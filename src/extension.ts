@@ -31,38 +31,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
 function isLoggedIn() {
 	try {
-		let isLoggedIn = false;
-		switch (os.platform().toLowerCase()) {
-			case "linux": {
-				isLoggedIn = fs.existsSync(os.userInfo().homedir + "/.wskprops");
-				break;
-			}
-			case "win32": {
-				isLoggedIn = fs.existsSync(os.userInfo().homedir + "/.wskprops");
-				break;
-			}
-			case 'aix': {
-				throw new Error("Not implemented yet.")
-				break;
-			}
-			case 'darwin': {
-				throw new Error("Not implemented yet.")
-				break;
-			}
-			case 'freebsd': {
-				throw new Error("Not implemented yet.")
-				break;
-			}
-			case 'openbsd': {
-				throw new Error("Not implemented yet.")
-				break;
-			}
-			case 'sunos': {
-				throw new Error("Not implemented yet.")
-				break;
-			}
-		}
-		return isLoggedIn;
+		return fs.existsSync(os.userInfo().homedir + "/.wskprops");
 	} catch (error) {
 		printError(error);
 		throw error;
