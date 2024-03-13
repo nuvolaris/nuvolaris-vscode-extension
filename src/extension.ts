@@ -10,7 +10,7 @@ let context: vscode.ExtensionContext;
 export async function activate(ctx: vscode.ExtensionContext) {
 	try {
 		context = ctx;
-		let loggedIn = isLoggedIn();
+		const loggedIn = isLoggedIn();
 		if (!loggedIn) LoginPanel.render(handleLogin, context.extensionUri);
 
 		Object.entries(CliCommands).forEach(([name, command]) =>
@@ -40,7 +40,7 @@ function isLoggedIn() {
 
 function handleLogin(username: string, password: string, apiHost: string) {
 	try {
-		launchTerminal(`nuv -login ${apiHost} ${username} ${password}`)
+		launchTerminal(`nuv -login ${apiHost} ${username} ${password}`);
 	} catch (error) {
 		printError(error);
 		throw error;
