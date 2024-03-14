@@ -38,7 +38,6 @@ function handleLoginSubmit() {
     const password = LoginPage.getPassword();
     const apiHost = LoginPage.getApiHost();
 
-    validateLogin();
     if (validateLogin()) {
       vscode.postMessage({
         command: "login",

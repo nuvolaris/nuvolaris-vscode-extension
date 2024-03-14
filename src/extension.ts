@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { NuvolarisTerminalName } from './constants';
 import { LoginPanel } from './login/LoginPanel';
-import { CliCommands } from './enumerators';
+import { CliCommands, LoginEnvironmentVariables } from './enumerators';
 import * as fs from "fs";
 import * as os from "os";
 
@@ -40,7 +40,10 @@ function isLoggedIn() {
 
 function handleLogin(username: string, password: string, apiHost: string) {
 	try {
-		launchTerminal(`nuv -login ${apiHost} ${username} ${password}`)
+		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvUser, username);
+		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvPassword, password);
+		context.environmentVariableCollection.append(LoginEnvironmentVariables.NuvApihost, apiHost);
+		launchTerminal(`nuv -login ${apiHost} ${username}` /**  ${password}`**/)
 	} catch (error) {
 		printError(error);
 		throw error;
