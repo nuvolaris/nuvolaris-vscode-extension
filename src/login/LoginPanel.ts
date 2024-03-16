@@ -118,7 +118,7 @@ export class LoginPanel {
         <form class="login-form" id="login-form">
           <input type="text" id="username-input" placeholder="Username">
           <input type="password" id="password-input" placeholder="Password">
-          <input type="text" id="api-host-input" placeholder="API Host URL" value="https://nuvolaris.dev/">
+          <input type="text" id="api-host-input" placeholder="API Host URL" value="https://nuvolaris.dev">
           <vscode-button id="login-button" type="submit" > L O G I N </vscode-button>
         </form>
         </div>

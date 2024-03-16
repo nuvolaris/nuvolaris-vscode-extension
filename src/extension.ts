@@ -4,6 +4,8 @@ import { LoginPanel } from './login/LoginPanel';
 import { CliCommands } from './enumerators';
 import * as fs from "fs";
 import * as os from "os";
+import { exec, execSync } from 'child_process';
+import { stderr } from 'process';
 
 let context: vscode.ExtensionContext;
 
@@ -15,7 +17,10 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
 		Object.entries(CliCommands).forEach(([name, command]) =>
 			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
-				if (!loggedIn) LoginPanel.render(handleLogin, context.extensionUri);
+					if (!loggedIn) {
+						LoginPanel.render(handleLogin, context.extensionUri);
+						return;
+					}
 				launchTerminal(command);
 			}
 			)));
@@ -39,13 +44,21 @@ function isLoggedIn() {
 }
 
 function handleLogin(username: string, password: string, apiHost: string) {
+	const loginOutput = vscode.window.createOutputChannel('Nuvolaris Login');
+	loginOutput.show();
 	try {
-		launchTerminal(`nuv -login ${apiHost} ${username} ${password}`);
-	} catch (error) {
-		printError(error);
+		loginOutput.appendLine('Launching login script...');
+		const execLogin = execSync(`nuv -login ${apiHost.endsWith('/') ? apiHost.slice(0, -1) : apiHost} ${username}`, {
+			env: {...process.env, NUV_PASSWORD: password}
+		});
+		loginOutput.appendLine(execLogin.toString());
+
+	} catch (error: any) {
+		loginOutput.appendLine(error);
 		throw error;
 	}
 }
+
 
 function launchTerminal(command: string): void {
 	try {
