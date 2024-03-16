@@ -12,12 +12,13 @@ let context: vscode.ExtensionContext;
 export async function activate(ctx: vscode.ExtensionContext) {
 	try {
 		context = ctx;
-		const loggedIn = isLoggedIn();
-		if (!loggedIn) LoginPanel.render(handleLogin, context.extensionUri);
+		if (!isLoggedIn()) {
+			LoginPanel.render(handleLogin, context.extensionUri);
+		} 
 
 		Object.entries(CliCommands).forEach(([name, command]) =>
 			context.subscriptions.push(vscode.commands.registerCommand(`nuvolaris.${name.toLowerCase()}`, () => {
-					if (!loggedIn) {
+					if (!isLoggedIn()) {
 						LoginPanel.render(handleLogin, context.extensionUri);
 						return;
 					}
@@ -34,13 +35,14 @@ export async function activate(ctx: vscode.ExtensionContext) {
 	}
 }
 
-function isLoggedIn() {
+function isLoggedIn(): boolean {
 	try {
-		return fs.existsSync(os.userInfo().homedir + "/.wskprops");
+		execSync('nuv -wsk namespace list');
+		return true;
 	} catch (error) {
-		printError(error);
-		throw error;
+		return false;
 	}
+	
 }
 
 function handleLogin(username: string, password: string, apiHost: string) {
