@@ -18,13 +18,13 @@ function main() {
       .addEventListener("click", handleLoginSubmit);
 
     LoginPage.getUsername()
-      .addEventListener("change", validateLogin);
+      .addEventListener("keypress", validateLogin);
 
     LoginPage.getPassword()
-      .addEventListener("change", validateLogin);
+      .addEventListener("keypress", validateLogin);
 
     LoginPage.getApiHost()
-      .addEventListener("change", validateLogin);
+      .addEventListener("keypress", validateLogin);
 
   } catch (error: any) {
     sendError(error);

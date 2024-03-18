@@ -1,7 +1,7 @@
 {
 	"name": "nuvolaris-vscode-extension",
 	"displayName": "nuvolaris",
-	"icon": "media/logo.png",
+	"icon": "media/nuv_market.png",
 	"description": "Nuvolaris extension for VS Code",
 	"version": "1.0.1",
 	"publisher": "nuvolaris",
