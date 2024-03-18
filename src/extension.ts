@@ -54,9 +54,10 @@ function handleLogin(username: string, password: string, apiHost: string) {
 			env: {...process.env, NUV_PASSWORD: password}
 		});
 		loginOutput.appendLine(execLogin.toString());
-
+		printInfo("You successfully logged in. You can now use the Nuvolaris command palette.")
 	} catch (error: any) {
 		loginOutput.appendLine(error);
+		printError("An error occurred in the login process. Check the output window for further details.")
 		throw error;
 	}
 }
@@ -64,8 +65,7 @@ function handleLogin(username: string, password: string, apiHost: string) {
 
 function launchTerminal(command: string): void {
 	try {
-		// If a terminal named "Nuvolaris" already exists, launch the command inside that one.
-		const terminal = vscode.window.terminals.find(t => t.name === NuvolarisTerminalName) || vscode.window.createTerminal(NuvolarisTerminalName);
+		const terminal = vscode.window.createTerminal(NuvolarisTerminalName);
 		terminal.show();
 		terminal.sendText(command, true);
 	} catch (error) {
@@ -76,4 +76,8 @@ function launchTerminal(command: string): void {
 
 function printError(error: any) {
 	return vscode.window.showErrorMessage("Error occurred", error.toString());
+}
+function printInfo(info: string) {
+	return vscode.window.showInformationMessage("Info", info);
+
 }
