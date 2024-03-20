@@ -3,7 +3,7 @@
 	"displayName": "nuvolaris",
 	"icon": "media/nuv_market.png",
 	"description": "Nuvolaris extension for VS Code",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"publisher": "nuvolaris",
 	"repository": "https://github.com/nuvolaris/nuvolaris-vscode-extension",
 	"engines": {

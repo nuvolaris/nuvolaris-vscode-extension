@@ -50,7 +50,7 @@ function handleLogin(username: string, password: string, apiHost: string) {
 	loginOutput.show();
 	try {
 		loginOutput.appendLine('Launching login script...');
-		const execLogin = execSync(`nuv -login ${apiHost.endsWith('/') ? apiHost.slice(0, -1) : apiHost} ${username}`, {
+		const execLogin = execSync(`nuv ide login  "${username}" "${apiHost.endsWith('/') ? apiHost.slice(0, -1) : apiHost}"`, {
 			env: {...process.env, NUV_PASSWORD: password}
 		});
 		loginOutput.appendLine(execLogin.toString());
