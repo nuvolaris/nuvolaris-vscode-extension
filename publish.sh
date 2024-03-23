@@ -5,4 +5,4 @@ vsce package
 vsce publish
 
 VER="$(jq -r .version package.json)"
-gh release create v$VER -t v$VER nuvolaris-vscode-extension-${VER}.vsix
+gh release create v$VER -t v$VER nuvolaris-vscode-extension.vsix
