@@ -11,6 +11,14 @@ let context: vscode.ExtensionContext;
 
 export async function activate(ctx: vscode.ExtensionContext) {
 	try {
+
+		// Necessary for Theia compatibility of welcome screen. See https://github.com/eclipse-theia/theia/issues/9361
+		vscode.window.registerTreeDataProvider(
+			"command-palette",
+			new EmptyTreeDataProvider()
+		);
+		// 
+
 		context = ctx;
 		if (!isLoggedIn()) {
 			LoginPanel.render(handleLogin, context.extensionUri);
@@ -75,9 +83,24 @@ function launchTerminal(command: string): void {
 }
 
 function printError(error: any) {
-	return vscode.window.showErrorMessage("Error occurred", error.toString());
+	return vscode.window.showErrorMessage(error.toString());
 }
 function printInfo(info: string) {
-	return vscode.window.showInformationMessage("Info", info);
+	return vscode.window.showInformationMessage(info);
 
+}
+
+export function deactivate() {}
+
+// Necessary for Theia compatibility of welcome screen. See https://github.com/eclipse-theia/theia/issues/9361
+export class EmptyTreeDataProvider implements vscode.TreeDataProvider<any> {
+	constructor() {}
+
+	getTreeItem(element: any): vscode.TreeItem {
+		return {};
+	}
+
+	getChildren(element?: any): Thenable<any[]> {
+		return new Promise((resolve) => resolve([]));
+	}
 }
