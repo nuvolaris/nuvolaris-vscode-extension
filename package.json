@@ -1,60 +1,60 @@
 {
-	"name": "nuvolaris-vscode-extension",
-	"displayName": "nuvolaris",
-	"icon": "media/nuv_market.png",
-	"description": "Nuvolaris extension for VS Code",
-	"version": "1.0.4",
-	"publisher": "nuvolaris",
-	"repository": "https://github.com/nuvolaris/nuvolaris-vscode-extension",
-	"engines": {
-		"vscode": "^1.87.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [],
-	"main": "./out/extension.js",
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "command-palette",
-					"title": "Nuvolaris",
-					"icon": "media/logo.png"
-				}
-			]
-		},
-		"views": {
-			"command-palette": [
-				{
-					"id": "command-palette",
-					"name": "Command Palette"
-				}
-			]
-		},
-		"viewsWelcome": [
-			{
-				"view": "command-palette",
-				"contents": "\n[Devel](command:nuvolaris.devel)\n[Deploy](command:nuvolaris.deploy)\n[Login](command:nuvolaris.login)"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "node ./esbuild.js",
-		"package": "set NODE_ENV=production && node ./esbuild.js",
-		"lint": "eslint \"src/**/*.ts\"",
-		"watch": "node ./esbuild.js --watch"
-	},
-	"devDependencies": {
-		"@types/node": "18.x",
-		"@types/vscode": "^1.87.0",
-		"@types/vscode-webview": "^1.57.5",
-		"@typescript-eslint/eslint-plugin": "^7.0.2",
-		"@typescript-eslint/parser": "^7.0.2",
-		"@vscode/webview-ui-toolkit": "^1.4.0",
-		"esbuild": "^0.20.2",
-		"eslint": "^8.56.0",
-		"typescript": "^5.3.3"
-	}
+  "name": "nuvolaris-vscode-extension",
+  "displayName": "nuvolaris",
+  "icon": "media/nuv_market.png",
+  "description": "Nuvolaris extension for VS Code",
+  "version": "1.0.5",
+  "publisher": "nuvolaris",
+  "repository": "https://github.com/nuvolaris/nuvolaris-vscode-extension",
+  "engines": {
+    "vscode": "^1.87.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "command-palette",
+          "title": "Nuvolaris",
+          "icon": "media/logo.png"
+        }
+      ]
+    },
+    "views": {
+      "command-palette": [
+        {
+          "id": "command-palette",
+          "name": "Command Palette"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "command-palette",
+        "contents": "\n[Devel](command:nuvolaris.devel)\n[Deploy](command:nuvolaris.deploy)\n[Login](command:nuvolaris.login)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node ./esbuild.js",
+    "package": "set NODE_ENV=production && node ./esbuild.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "watch": "node ./esbuild.js --watch"
+  },
+  "devDependencies": {
+    "@types/node": "18.x",
+    "@types/vscode": "^1.87.0",
+    "@types/vscode-webview": "^1.57.5",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "@vscode/webview-ui-toolkit": "^1.4.0",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
 }
