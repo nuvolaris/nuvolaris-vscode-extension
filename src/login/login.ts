@@ -1,31 +1,33 @@
-import { provideVSCodeDesignSystem, vsCodeButton } from "@vscode/webview-ui-toolkit";
+import {
+  provideVSCodeDesignSystem,
+  vsCodeButton,
+} from "@vscode/webview-ui-toolkit";
 import { LoginPageIDs } from "../enumerators";
-import { validateApiHost, validatePassword, validateUsername } from "../utilities/validate";
+import { validateNotEmptyField } from "../utilities/validate";
 provideVSCodeDesignSystem().register(vsCodeButton());
 const vscode = acquireVsCodeApi();
 window.addEventListener("load", main);
 
 const LoginPage = {
-  getUsername: (): HTMLInputElement => { return document.getElementById(LoginPageIDs.Username) as HTMLInputElement },
-  getPassword: (): HTMLInputElement => { return document.getElementById(LoginPageIDs.Password) as HTMLInputElement },
-  getApiHost: (): HTMLInputElement => { return document.getElementById(LoginPageIDs.ApiHost) as HTMLInputElement },
-  getLoginButton: (): HTMLButtonElement => { return document.getElementById(LoginPageIDs.LoginButton) as HTMLButtonElement }
-}
+  getUsername: (): HTMLInputElement => {
+    return document.getElementById(LoginPageIDs.Username) as HTMLInputElement;
+  },
+  getPassword: (): HTMLInputElement => {
+    return document.getElementById(LoginPageIDs.Password) as HTMLInputElement;
+  },
+  getApiHost: (): HTMLInputElement => {
+    return document.getElementById(LoginPageIDs.ApiHost) as HTMLInputElement;
+  },
+  getLoginButton: (): HTMLButtonElement => {
+    return document.getElementById(
+      LoginPageIDs.LoginButton
+    ) as HTMLButtonElement;
+  },
+};
 
 function main() {
   try {
-    LoginPage.getLoginButton()
-      .addEventListener("click", handleLoginSubmit);
-
-    LoginPage.getUsername()
-      .addEventListener("input", validateLogin);
-
-    LoginPage.getPassword()
-      .addEventListener("input", validateLogin)
-      
-    LoginPage.getApiHost()
-      .addEventListener("input", validateLogin);
-
+    LoginPage.getLoginButton().addEventListener("click", handleLoginSubmit);
   } catch (error: any) {
     sendError(error);
     throw error;
@@ -38,7 +40,6 @@ function handleLoginSubmit() {
     const password = LoginPage.getPassword();
     const apiHost = LoginPage.getApiHost();
 
-    validateLogin();
     if (validateLogin()) {
       vscode.postMessage({
         command: "login",
@@ -47,8 +48,7 @@ function handleLoginSubmit() {
         apiHost: `${apiHost.value}`,
         text: `${username.value} ${password.value} ${apiHost.value} PASS`,
       });
-    }
-    else {
+    } else {
       vscode.postMessage({
         command: "login",
         text: `${username.value} ${password.value} ${apiHost.value} NOT PASS`,
@@ -60,21 +60,26 @@ function handleLoginSubmit() {
   }
 }
 
-
 function validateLogin() {
   try {
-    const loginSubmitButton = LoginPage.getLoginButton();
-    let isUsernameValid = validateUsername(LoginPage.getUsername());
-    let isPasswordValid = validatePassword(LoginPage.getPassword());
-    let isApiHostValid = validateApiHost(LoginPage.getApiHost());
-    let isValid = isUsernameValid && isPasswordValid && isApiHostValid;
-    loginSubmitButton.disabled = !isValid;
-    return isValid;
+    const isUsernameValid = validateNotEmptyField(
+      "username",
+      LoginPage.getUsername()
+    );
+    const isPasswordValid = validateNotEmptyField(
+      "password",
+      LoginPage.getPassword()
+    );
+    const isApiHostValid = validateNotEmptyField(
+      "Api Host",
+      LoginPage.getApiHost()
+    );
+
+    return isUsernameValid && isPasswordValid && isApiHostValid;
   } catch (error: any) {
     sendError(error);
     throw error;
   }
-
 }
 
 function sendError(error: any) {
